@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Bite Delivery</title>
   <style>
     :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --card: #243044;
-      --accent: #00c853;
+      --bg: #0c1117;
+      --surface: #161d27;
+      --card: #1e2836;
+      --accent: #00e676;
       --accent2: #69f0ae;
       --gold: #ffd600;
       --text: #e8f0fe;
       --muted: #8b9bb4;
       --danger: #ff5252;
       --warning: #ffab40;
-      --border: #2d3a4f;
+      --border: #2a3548;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -29,67 +29,96 @@
     }
     .topbar {
       position: sticky; top: 0; z-index: 50;
-      background: rgba(15,20,25,0.95);
+      background: rgba(12,17,23,0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     }
     .brand {
-      font-size: 1.3rem; font-weight: 900;
+      font-size: 1.35rem; font-weight: 900;
       background: linear-gradient(135deg, #69f0ae, #00c853);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .stats { display: flex; gap: 10px; flex-wrap: wrap; }
-    .stat {
-      background: var(--surface); padding: 6px 12px; border-radius: 8px;
-      border: 1px solid var(--border); font-size: 0.9rem; font-weight: 700;
+    .money-display {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 1.05rem;
     }
-    .stat span { color: var(--gold); }
-    .main { max-width: 900px; margin: 0 auto; padding: 16px 14px 100px; }
-    .panel {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 16px; margin-bottom: 14px;
+    .money-display span { color: var(--gold); }
+    .main { max-width: 520px; margin: 0 auto; padding: 16px 14px 110px; }
+    .phone-card {
+      background: linear-gradient(160deg, #1a2433, #121a24);
+      border: 2px solid var(--border); border-radius: 20px; padding: 20px;
+      margin-bottom: 16px; text-align: center;
     }
-    h2 { font-size: 1.1rem; color: var(--accent2); margin-bottom: 12px; }
+    .phone-status {
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 10px;
+      text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
+    }
+    .fetch-btn {
+      width: 100%; padding: 16px; border-radius: 14px; border: none;
+      font-size: 1.15rem; font-weight: 900; cursor: pointer; transition: 0.2s;
+    }
+    .fetch-btn.off {
+      background: var(--surface); color: var(--muted); border: 2px solid var(--border);
+    }
+    .fetch-btn.on {
+      background: linear-gradient(135deg, #00e676, #00c853); color: #003300;
+      box-shadow: 0 4px 20px rgba(0,230,118,0.35);
+    }
+    .job-card {
+      background: var(--card); border: 2px solid var(--accent);
+      border-radius: 16px; padding: 18px; margin-bottom: 16px; display: none;
+    }
+    .job-card.show { display: block; }
+    .job-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; }
+    .job-meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; }
+    .steps { display: flex; gap: 6px; margin-bottom: 16px; }
+    .step {
+      flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px;
+      font-size: 0.8rem; font-weight: 700; background: var(--surface); color: var(--muted);
+    }
+    .step.done { background: rgba(0,230,118,0.15); color: var(--accent2); }
+    .step.current { background: var(--accent); color: #003300; }
+    .action-row { display: flex; gap: 10px; }
+    .action-row button { flex: 1; }
+    .section-title {
+      font-size: 0.9rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 1px; font-weight: 700; margin-bottom: 10px;
+    }
     .orders { display: flex; flex-direction: column; gap: 10px; }
     .order {
-      background: var(--surface); border: 2px solid var(--border);
-      border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+      padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
     }
     .order.urgent { border-color: var(--danger); }
-    .order-info { flex: 1; }
-    .order-title { font-weight: 800; font-size: 1rem; }
-    .order-meta { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
-    .timer-bar { height: 5px; background: #1a2332; border-radius: 3px; margin-top: 8px; overflow: hidden; }
-    .timer-fill { height: 100%; border-radius: 3px; transition: width 0.3s linear; }
+    .order-info { flex: 1; min-width: 0; }
+    .order-name { font-weight: 800; }
+    .order-details { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+    .timer { height: 4px; background: #1a2332; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .timer-fill { height: 100%; border-radius: 2px; transition: width 0.3s linear; }
     .btn {
-      background: linear-gradient(135deg, #00e676, #00c853);
-      color: #003300; border: none; border-radius: 10px; padding: 10px 16px;
-      font-weight: 800; font-size: 0.9rem; cursor: pointer; white-space: nowrap;
+      background: linear-gradient(135deg, #00e676, #00c853); color: #003300;
+      border: none; border-radius: 12px; padding: 12px 18px; font-weight: 800;
+      font-size: 0.95rem; cursor: pointer; transition: 0.15s;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,200,83,0.35); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn.secondary { background: transparent; border: 2px solid var(--border); color: var(--text); }
-    .btn.secondary:hover { border-color: var(--accent2); color: var(--accent2); }
-    .btn.small { padding: 7px 12px; font-size: 0.8rem; }
-    .active-job {
-      background: linear-gradient(135deg, #1b3a2a, #0f2418);
-      border: 2px solid var(--accent);
-      border-radius: 14px; padding: 16px; margin-bottom: 14px;
-    }
-    .progress-row { display: flex; gap: 8px; margin-top: 12px; }
-    .step {
-      flex: 1; text-align: center; padding: 10px 6px; border-radius: 10px;
-      background: var(--surface); font-size: 0.85rem; font-weight: 700; color: var(--muted);
-    }
-    .step.done { background: rgba(0,200,83,0.2); color: var(--accent2); }
-    .step.current { background: var(--accent); color: #003300; }
+    .btn.small { padding: 8px 14px; font-size: 0.85rem; }
+    .empty { text-align: center; padding: 28px 16px; color: var(--muted); font-size: 0.95rem; }
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(15,20,25,0.96); border-top: 1px solid var(--border);
-      padding: 12px 16px; display: flex; justify-content: center; gap: 10px; z-index: 40; flex-wrap: wrap;
+      background: rgba(12,17,23,0.97); border-top: 1px solid var(--border);
+      padding: 12px 16px; display: flex; justify-content: center; gap: 10px; z-index: 40;
     }
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(30px);
+      background: var(--card); border: 2px solid var(--accent); padding: 12px 22px;
+      border-radius: 12px; font-weight: 700; z-index: 200; opacity: 0; transition: 0.3s;
+      pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
       z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px;
@@ -97,110 +126,61 @@
     .overlay.open { display: flex; }
     .modal {
       background: var(--card); border: 1px solid var(--border); border-radius: 18px;
-      padding: 24px; max-width: 460px; width: 100%; max-height: 85vh; overflow-y: auto;
+      padding: 24px; max-width: 400px; width: 100%; max-height: 80vh; overflow-y: auto;
     }
-    .modal h2 { color: var(--accent2); margin-bottom: 10px; }
-    .modal p { color: var(--muted); margin-bottom: 14px; font-size: 0.95rem; }
+    .modal h2 { color: var(--accent2); margin-bottom: 8px; }
+    .modal p { color: var(--muted); margin-bottom: 16px; font-size: 0.95rem; }
     .shop-item {
       background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px;
+      padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between;
+      align-items: center; gap: 12px;
     }
-    .shop-item.owned { opacity: 0.55; }
+    .shop-item.owned { opacity: 0.5; }
     .shop-name { font-weight: 800; }
     .shop-desc { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-    .toast {
-      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px);
-      background: var(--card); border: 2px solid var(--accent); padding: 12px 20px;
-      border-radius: 12px; font-weight: 700; z-index: 200; transition: 0.3s; pointer-events: none; opacity: 0;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .empty { text-align: center; padding: 30px; color: var(--muted); }
-    .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
-    .summary div { background: var(--surface); border-radius: 10px; padding: 12px; text-align: center; }
-    .summary strong { display: block; font-size: 1.3rem; color: var(--gold); margin-top: 2px; }
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="brand">🛵 Bite Delivery</div>
-    <div class="stats">
-      <div class="stat">💰 $<span id="money">40</span></div>
-      <div class="stat">⭐ <span id="rep">50</span></div>
-      <div class="stat">📦 <span id="capacity">1</span>/<span id="maxCap">1</span></div>
-      <div class="stat">Day <span id="day">1</span></div>
-    </div>
+    <div class="money-display">💰 $<span id="money">0</span></div>
   </div>
 
   <div class="main">
-    <div id="activeJob" class="active-job" style="display:none">
-      <div style="font-weight:800; margin-bottom:6px" id="jobTitle">Current Delivery</div>
-      <div class="order-meta" id="jobMeta"></div>
-      <div class="progress-row">
-        <div class="step" id="step1">📍 Accept</div>
-        <div class="step" id="step2">🍔 Pickup</div>
-        <div class="step" id="step3">🏠 Deliver</div>
+    <div class="phone-card">
+      <div class="phone-status" id="fetchStatus">Order Fetching: OFF</div>
+      <button class="fetch-btn off" id="fetchBtn">Turn On Order Fetching</button>
+    </div>
+
+    <div class="job-card" id="jobCard">
+      <div class="job-title" id="jobTitle">—</div>
+      <div class="job-meta" id="jobMeta">—</div>
+      <div class="steps">
+        <div class="step" id="s1">Accept</div>
+        <div class="step" id="s2">Pickup</div>
+        <div class="step" id="s3">Deliver</div>
       </div>
-      <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn" id="actionBtn" onclick="doAction()">Go to Restaurant</button>
-        <button class="btn secondary small" onclick="cancelJob()">Cancel</button>
+      <div class="action-row">
+        <button class="btn" id="mainAction">Go</button>
+        <button class="btn secondary small" id="cancelBtn">Cancel</button>
       </div>
     </div>
 
-    <div class="panel">
-      <h2>📋 Available Orders</h2>
-      <div class="orders" id="orderList"></div>
-      <div class="empty" id="noOrders">No orders right now. Start your shift!</div>
-    </div>
-
-    <div class="panel">
-      <h2>📊 Shift Stats</h2>
-      <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.95rem">
-        <div>Delivered: <strong id="delivered">0</strong></div>
-        <div>Earned: <strong id="earned">$0</strong></div>
-        <div>Failed: <strong id="failed">0</strong></div>
-      </div>
-    </div>
+    <div class="section-title">Available Orders</div>
+    <div class="orders" id="orderList"></div>
+    <div class="empty" id="emptyMsg">Turn on Order Fetching to receive jobs</div>
   </div>
 
   <div class="bottom-bar">
-    <button class="btn" id="btnShift" onclick="toggleShift()">▶ Start Shift</button>
-    <button class="btn secondary" onclick="openShop()">🛒 Upgrades</button>
+    <button class="btn secondary" id="shopBtn">🛒 Upgrades</button>
   </div>
 
-  <div class="overlay" id="dayEnd">
-    <div class="modal">
-      <h2>🌅 Shift Complete</h2>
-      <div class="summary">
-        <div>Delivered<strong id="endDelivered">0</strong></div>
-        <div>Earned<strong id="endEarned">$0</strong></div>
-        <div>Failed<strong id="endFailed">0</strong></div>
-        <div>Rep Change<strong id="endRep">0</strong></div>
-      </div>
-      <p id="endMsg">Good work out there.</p>
-      <button class="btn" onclick="nextDay()" style="width:100%">Next Day</button>
-    </div>
-  </div>
-
-  <div class="overlay" id="shop">
+  <div class="overlay" id="shopOverlay">
     <div class="modal">
       <h2>🛒 Upgrades</h2>
       <p>Money: $<span id="shopMoney">0</span></p>
       <div id="shopList"></div>
-      <button class="btn secondary" onclick="closeShop()" style="width:100%;margin-top:10px">Close</button>
-    </div>
-  </div>
-
-  <div class="overlay open" id="startScreen">
-    <div class="modal">
-      <h2 style="font-size:1.6rem">🛵 Bite Delivery</h2>
-      <p>Accept orders, pick up food, and deliver before the timer runs out. Build reputation, upgrade your ride, and become the fastest courier in the city.</p>
-      <p style="font-size:0.85rem;color:var(--muted)">
-        • Accept orders from the list<br>
-        • Travel to the restaurant → then to the customer<br>
-        • Faster deliveries = better tips<br>
-        • Don’t let orders expire!
-      </p>
-      <button class="btn" onclick="closeStart()" style="width:100%;margin-top:12px">Start Working</button>
+      <button class="btn secondary" style="width:100%;margin-top:8px" id="closeShopBtn">Close</button>
     </div>
   </div>
 
@@ -208,70 +188,240 @@
 
   <script>
     const RESTAURANTS = [
-      { id: 'pizza', name: 'Tony\'s Pizza', emoji: '🍕' },
-      { id: 'burger', name: 'Burger Lab', emoji: '🍔' },
-      { id: 'sushi', name: 'Sakura Sushi', emoji: '🍣' },
-      { id: 'taco', name: 'Taco Fiesta', emoji: '🌮' },
-      { id: 'coffee', name: 'Bean There', emoji: '☕' }
+      { name: "Tony's Pizza", emoji: "🍕" },
+      { name: "Burger Lab", emoji: "🍔" },
+      { name: "Sakura Sushi", emoji: "🍣" },
+      { name: "Taco Fiesta", emoji: "🌮" },
+      { name: "Bean There", emoji: "☕" },
+      { name: "Noodle House", emoji: "🍜" },
+      { name: "Sweet Treats", emoji: "🍩" }
     ];
-    const AREAS = ['Downtown', 'Westside', 'Riverside', 'Uptown', 'East End'];
-
+    const AREAS = ["Downtown", "Westside", "Riverside", "Uptown", "East End", "Midtown"];
     const UPGRADES = [
-      { id: 'bag', name: 'Bigger Bag', desc: 'Carry +1 order at once', cost: 50, effect: { capacity: 1 } },
-      { id: 'bike', name: 'Electric Scooter', desc: 'Travel 25% faster', cost: 80, effect: { speed: 0.25 } },
-      { id: 'insulated', name: 'Insulated Bag', desc: '+$3 tip on every delivery', cost: 60, effect: { tip: 3 } },
-      { id: 'gps', name: 'Pro GPS', desc: 'Orders last 20% longer', cost: 70, effect: { time: 0.2 } },
-      { id: 'ads', name: 'App Boost', desc: 'More orders appear', cost: 90, effect: { orders: 0.3 } },
-      { id: 'bag2', name: 'XL Backpack', desc: 'Carry +1 more order', cost: 120, effect: { capacity: 1 } }
+      { id: "bag1", name: "Bigger Bag", desc: "Carry 2 orders at once", cost: 45, maxCap: 2 },
+      { id: "scooter", name: "Electric Scooter", desc: "Travel 30% faster", cost: 70, speed: 0.3 },
+      { id: "tips", name: "Insulated Bag", desc: "+$4 tip every delivery", cost: 55, tip: 4 },
+      { id: "time", name: "Pro GPS", desc: "Orders last longer", cost: 60, time: 0.25 },
+      { id: "bag2", name: "XL Backpack", desc: "Carry 3 orders at once", cost: 110, maxCap: 3 },
+      { id: "rate", name: "Priority Access", desc: "More orders appear", cost: 85, rate: 0.35 }
     ];
 
-    let state = {
-      money: 40,
-      rep: 50,
-      day: 1,
-      capacity: 1,
-      maxCapacity: 1,
-      speed: 1,
-      tipBonus: 0,
-      timeBonus: 0,
-      orderRate: 1,
-      owned: [],
-      shift: false,
-      active: null,
-      orders: [],
-      carrying: 0,
-      stats: { delivered: 0, earned: 0, failed: 0 },
-      orderId: 0
-    };
-
-    let tickTimer = null;
-    let spawnTimer = null;
+    let money = 25, fetching = false, maxCapacity = 1, carrying = 0;
+    let speedBonus = 0, tipBonus = 0, timeBonus = 0, rateBonus = 0;
+    let owned = [], orders = [], active = null, nextId = 1;
+    let spawnInterval = null, tickInterval = null;
 
     function $(id) { return document.getElementById(id); }
     function toast(msg) {
-      const t = $('toast');
+      const t = $("toast");
       t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2000);
     }
-    function updateUI() {
-      $('money').textContent = state.money;
-      $('rep').textContent = state.rep;
-      $('capacity').textContent = state.carrying;
-      $('maxCap').textContent = state.maxCapacity;
-      $('day').textContent = state.day;
-      $('delivered').textContent = state.stats.delivered;
-      $('earned').textContent = '$' + state.stats.earned;
-      $('failed').textContent = state.stats.failed;
+    function updateMoney() {
+      $("money").textContent = money;
+      $("shopMoney").textContent = money;
     }
 
-    function closeStart() {
-      $('startScreen').classList.remove('open');
+    function toggleFetching() {
+      fetching = !fetching;
+      const btn = $("fetchBtn");
+      const status = $("fetchStatus");
+      if (fetching) {
+        btn.textContent = "Turn Off Order Fetching";
+        btn.className = "fetch-btn on";
+        status.textContent = "Order Fetching: ON";
+        status.style.color = "var(--accent2)";
+        startSpawning();
+        toast("Order fetching enabled");
+      } else {
+        btn.textContent = "Turn On Order Fetching";
+        btn.className = "fetch-btn off";
+        status.textContent = "Order Fetching: OFF";
+        status.style.color = "var(--muted)";
+        stopSpawning();
+        toast("Order fetching disabled");
+      }
+      renderOrders();
+    }
+
+    function startSpawning() {
+      stopSpawning();
+      const base = Math.max(2800, 5500 - rateBonus * 2000);
+      spawnInterval = setInterval(spawnOrder, base);
+      setTimeout(spawnOrder, 800);
+      setTimeout(spawnOrder, 2200);
+      if (!tickInterval) tickInterval = setInterval(tick, 1000);
+    }
+    function stopSpawning() {
+      clearInterval(spawnInterval);
+      spawnInterval = null;
+      if (!active && orders.length === 0) {
+        clearInterval(tickInterval);
+        tickInterval = null;
+      }
     }
 
     function spawnOrder() {
-      if (!state.shift) return;
-      if (state.orders.length >= 5) return;
-
+      if (!fetching || orders.length >= 6) return;
       const rest = RESTAURANTS[Math.floor(Math.random() * RESTAURANTS.length)];
-      const area =
+      const area = AREAS[Math.floor(Math.random() * AREAS.length)];
+      const pay = 9 + Math.floor(Math.random() * 12);
+      const maxTime = Math.floor((50 + Math.random() * 40) * (1 + timeBonus));
+      const dist = 1 + Math.floor(Math.random() * 3);
+      orders.push({ id: nextId++, restaurant: rest, area, pay, timeLeft: maxTime, maxTime, distance: dist });
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const list = $("orderList");
+      const empty = $("emptyMsg");
+      if (orders.length === 0) {
+        list.innerHTML = "";
+        empty.style.display = "block";
+        empty.textContent = fetching ? "Waiting for orders..." : "Turn on Order Fetching to receive jobs";
+        return;
+      }
+      empty.style.display = "none";
+      list.innerHTML = orders.map(o => {
+        const pct = Math.max(0, (o.timeLeft / o.maxTime) * 100);
+        const color = pct > 50 ? "var(--accent)" : pct > 25 ? "var(--warning)" : "var(--danger)";
+        const canAccept = !active && carrying < maxCapacity;
+        return `<div class="order ${pct < 30 ? "urgent" : ""}">
+          <div class="order-info">
+            <div class="order-name">${o.restaurant.emoji} ${o.restaurant.name}</div>
+            <div class="order-details">→ ${o.area} · $${o.pay} · ${o.distance} blocks</div>
+            <div class="timer"><div class="timer-fill" style="width:${pct}%;background:${color}"></div></div>
+          </div>
+          <button class="btn small accept-btn" data-id="${o.id}" ${canAccept ? "" : "disabled"}>Accept</button>
+        </div>`;
+      }).join("");
+      document.querySelectorAll(".accept-btn").forEach(btn => {
+        btn.addEventListener("click", () => acceptOrder(parseInt(btn.dataset.id)));
+      });
+    }
+
+    function acceptOrder(id) {
+      if (active || carrying >= maxCapacity) return;
+      const o = orders.find(x => x.id === id);
+      if (!o) return;
+      orders = orders.filter(x => x.id !== id);
+      active = { ...o, stage: "to_restaurant", travelLeft: Math.ceil(o.distance * 3.5 / (1 + speedBonus)) };
+      carrying++;
+      renderOrders();
+      renderJob();
+      toast("Order accepted!");
+    }
+
+    function renderJob() {
+      const card = $("jobCard");
+      if (!active) { card.classList.remove("show"); return; }
+      card.classList.add("show");
+      $("jobTitle").textContent = `${active.restaurant.emoji} ${active.restaurant.name} → ${active.area}`;
+      $("jobMeta").textContent = `$${active.pay} · ${active.timeLeft}s left · Travel ${active.travelLeft}s`;
+      $("s1").className = "step done";
+      $("s2").className = "step" + (active.stage === "to_restaurant" ? " current" : " done");
+      $("s3").className = "step" + (active.stage === "to_customer" ? " current" : "");
+      const btn = $("mainAction");
+      if (active.stage === "to_restaurant") {
+        btn.textContent = active.travelLeft > 0 ? `Riding... ${active.travelLeft}s` : "📥 Pick Up Food";
+        btn.disabled = active.travelLeft > 0;
+      } else {
+        btn.textContent = active.travelLeft > 0 ? `Riding... ${active.travelLeft}s` : "✅ Complete Delivery";
+        btn.disabled = active.travelLeft > 0;
+      }
+    }
+
+    function doMainAction() {
+      if (!active) return;
+      if (active.stage === "to_restaurant" && active.travelLeft <= 0) {
+        active.stage = "to_customer";
+        active.travelLeft = Math.ceil(active.distance * 3.5 / (1 + speedBonus));
+        toast("Food picked up!");
+        renderJob();
+        return;
+      }
+      if (active.stage === "to_customer" && active.travelLeft <= 0) {
+        const tip = Math.floor(active.pay * 0.18) + tipBonus + (active.timeLeft > active.maxTime * 0.45 ? 3 : 0);
+        const total = active.pay + tip;
+        money += total;
+        carrying--;
+        active = null;
+        updateMoney();
+        renderJob();
+        renderOrders();
+        toast(`Delivered! +$${total}`);
+      }
+    }
+
+    function cancelJob() {
+      if (!active) return;
+      carrying--;
+      active = null;
+      renderJob();
+      renderOrders();
+      toast("Order cancelled");
+    }
+
+    function tick() {
+      let changed = false;
+      orders.forEach(o => { o.timeLeft--; if (o.timeLeft <= 0) changed = true; });
+      orders = orders.filter(o => o.timeLeft > 0);
+      if (changed) renderOrders();
+      if (active) {
+        active.timeLeft--;
+        if (active.travelLeft > 0) active.travelLeft--;
+        if (active.timeLeft <= 0) {
+          toast("Order expired!");
+          carrying--;
+          active = null;
+          renderJob();
+          renderOrders();
+        } else renderJob();
+      }
+    }
+
+    function openShop() {
+      $("shopMoney").textContent = money;
+      $("shopList").innerHTML = UPGRADES.map(u => {
+        const isOwned = owned.includes(u.id);
+        return `<div class="shop-item ${isOwned ? "owned" : ""}">
+          <div><div class="shop-name">${u.name}</div><div class="shop-desc">${u.desc}</div></div>
+          ${isOwned ? '<span style="color:var(--accent2);font-weight:800">Owned</span>'
+            : `<button class="btn small buy-btn" data-id="${u.id}" ${money < u.cost ? "disabled" : ""}>$${u.cost}</button>`}
+        </div>`;
+      }).join("");
+      document.querySelectorAll(".buy-btn").forEach(btn => {
+        btn.addEventListener("click", () => buyUpgrade(btn.dataset.id));
+      });
+      $("shopOverlay").classList.add("open");
+    }
+    function closeShop() { $("shopOverlay").classList.remove("open"); }
+
+    function buyUpgrade(id) {
+      const u = UPGRADES.find(x => x.id === id);
+      if (!u || owned.includes(id) || money < u.cost) return;
+      money -= u.cost;
+      owned.push(id);
+      if (u.maxCap) maxCapacity = u.maxCap;
+      if (u.speed) speedBonus += u.speed;
+      if (u.tip) tipBonus += u.tip;
+      if (u.time) timeBonus += u.time;
+      if (u.rate) rateBonus += u.rate;
+      updateMoney();
+      toast("Bought " + u.name);
+      openShop();
+    }
+
+    $("fetchBtn").addEventListener("click", toggleFetching);
+    $("mainAction").addEventListener("click", doMainAction);
+    $("cancelBtn").addEventListener("click", cancelJob);
+    $("shopBtn").addEventListener("click", openShop);
+    $("closeShopBtn").addEventListener("click", closeShop);
+    $("shopOverlay").addEventListener("click", e => { if (e.target === $("shopOverlay")) closeShop(); });
+
+    updateMoney();
+    renderOrders();
+  </script>
+</body>
+</html>
