@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Bite Delivery</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --card: #243044;
+      --accent: #00c853;
+      --accent2: #69f0ae;
+      --gold: #ffd600;
+      --text: #e8f0fe;
+      --muted: #8b9bb4;
+      --danger: #ff5252;
+      --warning: #ffab40;
+      --border: #2d3a4f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,20,25,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .brand {
+      font-size: 1.3rem; font-weight: 900;
+      background: linear-gradient(135deg, #69f0ae, #00c853);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat {
+      background: var(--surface); padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); font-size: 0.9rem; font-weight: 700;
+    }
+    .stat span { color: var(--gold); }
+    .main { max-width: 900px; margin: 0 auto; padding: 16px 14px 100px; }
+    .panel {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; margin-bottom: 14px;
+    }
+    h2 { font-size: 1.1rem; color: var(--accent2); margin-bottom: 12px; }
+    .orders { display: flex; flex-direction: column; gap: 10px; }
+    .order {
+      background: var(--surface); border: 2px solid var(--border);
+      border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .order.urgent { border-color: var(--danger); }
+    .order-info { flex: 1; }
+    .order-title { font-weight: 800; font-size: 1rem; }
+    .order-meta { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+    .timer-bar { height: 5px; background: #1a2332; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    .timer-fill { height: 100%; border-radius: 3px; transition: width 0.3s linear; }
+    .btn {
+      background: linear-gradient(135deg, #00e676, #00c853);
+      color: #003300; border: none; border-radius: 10px; padding: 10px 16px;
+      font-weight: 800; font-size: 0.9rem; cursor: pointer; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,200,83,0.35); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn.secondary { background: transparent; border: 2px solid var(--border); color: var(--text); }
+    .btn.secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+    .btn.small { padding: 7px 12px; font-size: 0.8rem; }
+    .active-job {
+      background: linear-gradient(135deg, #1b3a2a, #0f2418);
+      border: 2px solid var(--accent);
+      border-radius: 14px; padding: 16px; margin-bottom: 14px;
+    }
+    .progress-row { display: flex; gap: 8px; margin-top: 12px; }
+    .step {
+      flex: 1; text-align: center; padding: 10px 6px; border-radius: 10px;
+      background: var(--surface); font-size: 0.85rem; font-weight: 700; color: var(--muted);
+    }
+    .step.done { background: rgba(0,200,83,0.2); color: var(--accent2); }
+    .step.current { background: var(--accent); color: #003300; }
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(15,20,25,0.96); border-top: 1px solid var(--border);
+      padding: 12px 16px; display: flex; justify-content: center; gap: 10px; z-index: 40; flex-wrap: wrap;
+    }
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+      z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      padding: 24px; max-width: 460px; width: 100%; max-height: 85vh; overflow-y: auto;
+    }
+    .modal h2 { color: var(--accent2); margin-bottom: 10px; }
+    .modal p { color: var(--muted); margin-bottom: 14px; font-size: 0.95rem; }
+    .shop-item {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .shop-item.owned { opacity: 0.55; }
+    .shop-name { font-weight: 800; }
+    .shop-desc { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px);
+      background: var(--card); border: 2px solid var(--accent); padding: 12px 20px;
+      border-radius: 12px; font-weight: 700; z-index: 200; transition: 0.3s; pointer-events: none; opacity: 0;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .empty { text-align: center; padding: 30px; color: var(--muted); }
+    .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+    .summary div { background: var(--surface); border-radius: 10px; padding: 12px; text-align: center; }
+    .summary strong { display: block; font-size: 1.3rem; color: var(--gold); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">🛵 Bite Delivery</div>
+    <div class="stats">
+      <div class="stat">💰 $<span id="money">40</span></div>
+      <div class="stat">⭐ <span id="rep">50</span></div>
+      <div class="stat">📦 <span id="capacity">1</span>/<span id="maxCap">1</span></div>
+      <div class="stat">Day <span id="day">1</span></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="activeJob" class="active-job" style="display:none">
+      <div style="font-weight:800; margin-bottom:6px" id="jobTitle">Current Delivery</div>
+      <div class="order-meta" id="jobMeta"></div>
+      <div class="progress-row">
+        <div class="step" id="step1">📍 Accept</div>
+        <div class="step" id="step2">🍔 Pickup</div>
+        <div class="step" id="step3">🏠 Deliver</div>
+      </div>
+      <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn" id="actionBtn" onclick="doAction()">Go to Restaurant</button>
+        <button class="btn secondary small" onclick="cancelJob()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>📋 Available Orders</h2>
+      <div class="orders" id="orderList"></div>
+      <div class="empty" id="noOrders">No orders right now. Start your shift!</div>
+    </div>
+
+    <div class="panel">
+      <h2>📊 Shift Stats</h2>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.95rem">
+        <div>Delivered: <strong id="delivered">0</strong></div>
+        <div>Earned: <strong id="earned">$0</strong></div>
+        <div>Failed: <strong id="failed">0</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn" id="btnShift" onclick="toggleShift()">▶ Start Shift</button>
+    <button class="btn secondary" onclick="openShop()">🛒 Upgrades</button>
+  </div>
+
+  <div class="overlay" id="dayEnd">
+    <div class="modal">
+      <h2>🌅 Shift Complete</h2>
+      <div class="summary">
+        <div>Delivered<strong id="endDelivered">0</strong></div>
+        <div>Earned<strong id="endEarned">$0</strong></div>
+        <div>Failed<strong id="endFailed">0</strong></div>
+        <div>Rep Change<strong id="endRep">0</strong></div>
+      </div>
+      <p id="endMsg">Good work out there.</p>
+      <button class="btn" onclick="nextDay()" style="width:100%">Next Day</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="shop">
+    <div class="modal">
+      <h2>🛒 Upgrades</h2>
+      <p>Money: $<span id="shopMoney">0</span></p>
+      <div id="shopList"></div>
+      <button class="btn secondary" onclick="closeShop()" style="width:100%;margin-top:10px">Close</button>
+    </div>
+  </div>
+
+  <div class="overlay open" id="startScreen">
+    <div class="modal">
+      <h2 style="font-size:1.6rem">🛵 Bite Delivery</h2>
+      <p>Accept orders, pick up food, and deliver before the timer runs out. Build reputation, upgrade your ride, and become the fastest courier in the city.</p>
+      <p style="font-size:0.85rem;color:var(--muted)">
+        • Accept orders from the list<br>
+        • Travel to the restaurant → then to the customer<br>
+        • Faster deliveries = better tips<br>
+        • Don’t let orders expire!
+      </p>
+      <button class="btn" onclick="closeStart()" style="width:100%;margin-top:12px">Start Working</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const RESTAURANTS = [
+      { id: 'pizza', name: 'Tony\'s Pizza', emoji: '🍕' },
+      { id: 'burger', name: 'Burger Lab', emoji: '🍔' },
+      { id: 'sushi', name: 'Sakura Sushi', emoji: '🍣' },
+      { id: 'taco', name: 'Taco Fiesta', emoji: '🌮' },
+      { id: 'coffee', name: 'Bean There', emoji: '☕' }
+    ];
+    const AREAS = ['Downtown', 'Westside', 'Riverside', 'Uptown', 'East End'];
+
+    const UPGRADES = [
+      { id: 'bag', name: 'Bigger Bag', desc: 'Carry +1 order at once', cost: 50, effect: { capacity: 1 } },
+      { id: 'bike', name: 'Electric Scooter', desc: 'Travel 25% faster', cost: 80, effect: { speed: 0.25 } },
+      { id: 'insulated', name: 'Insulated Bag', desc: '+$3 tip on every delivery', cost: 60, effect: { tip: 3 } },
+      { id: 'gps', name: 'Pro GPS', desc: 'Orders last 20% longer', cost: 70, effect: { time: 0.2 } },
+      { id: 'ads', name: 'App Boost', desc: 'More orders appear', cost: 90, effect: { orders: 0.3 } },
+      { id: 'bag2', name: 'XL Backpack', desc: 'Carry +1 more order', cost: 120, effect: { capacity: 1 } }
+    ];
+
+    let state = {
+      money: 40,
+      rep: 50,
+      day: 1,
+      capacity: 1,
+      maxCapacity: 1,
+      speed: 1,
+      tipBonus: 0,
+      timeBonus: 0,
+      orderRate: 1,
+      owned: [],
+      shift: false,
+      active: null,
+      orders: [],
+      carrying: 0,
+      stats: { delivered: 0, earned: 0, failed: 0 },
+      orderId: 0
+    };
+
+    let tickTimer = null;
+    let spawnTimer = null;
+
+    function $(id) { return document.getElementById(id); }
+    function toast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+    function updateUI() {
+      $('money').textContent = state.money;
+      $('rep').textContent = state.rep;
+      $('capacity').textContent = state.carrying;
+      $('maxCap').textContent = state.maxCapacity;
+      $('day').textContent = state.day;
+      $('delivered').textContent = state.stats.delivered;
+      $('earned').textContent = '$' + state.stats.earned;
+      $('failed').textContent = state.stats.failed;
+    }
+
+    function closeStart() {
+      $('startScreen').classList.remove('open');
+    }
+
+    function spawnOrder() {
+      if (!state.shift) return;
+      if (state.orders.length >= 5) return;
+
+      const rest = RESTAURANTS[Math.floor(Math.random() * RESTAURANTS.length)];
+      const area =
